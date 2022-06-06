@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  api:
+    container_name: 'backend-vacancy-challenge-api'
+    build: .
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - .:/home/api
+    environment:
+      - TYPEORM_HOST=database-backend-vacancy
+      - TYPEORM_PORT=5432
+    depends_on:
+      - database
+    networks:
+      - backendvacancy
+
+  database:
+    container_name: 'database-backend-vacancy'
+    image: 'postgres:13-alpine'
+    environment:
+      - POSTGRES_USER=${TYPEORM_USERNAME}
+      - POSTGRES_PASSWORD=${TYPEORM_PASSWORD}
+      - POSTGRES_DB=${TYPEORM_DATABASE}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    networks:
+      - backendvacancy
+
+networks:
+  backendvacancy:
+    driver: bridge
